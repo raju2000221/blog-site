@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const { connectToMongoDB } = require('./database/database');
 const userRoutes = require('./routes/userRoute');
+const authRoute = require('./routes/authRoute');
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -15,6 +16,7 @@ connectToMongoDB();
 
 // Mount user routes
 app.use('/', userRoutes);
+app.use('/', authRoute);
 
 // Default route
 app.get('/', (req, res) => {

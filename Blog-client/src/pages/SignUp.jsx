@@ -45,7 +45,6 @@ const SignUp = () => {
         try {
             setLoading(true);
             const res = await axios.post('http://localhost:5000/userSignUp', formData);
-            setAlert(res.data.message); // Show success message
             setLoading(false);
             setFormData({});
             setErrors({});
@@ -53,6 +52,7 @@ const SignUp = () => {
             document.getElementById('email').value = '';
             document.getElementById('password').value = '';
             if(res.status === 201){
+                console.log('log')
                 navigate('/SignIn')
             }
         } catch (error) {
