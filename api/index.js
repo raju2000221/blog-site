@@ -1,32 +1,27 @@
-import express from 'express'
-import mongoose from 'mongoose';
-import dotenv from 'dotenv';
-import UserRoutes from './routes/User.route.js';
-import AuthRoute from './routes/auth.route.js';
-
-dotenv.config()
-mongoose.connect(process.env.MONGO).then( () =>{
-    console.log('mongodb connected')
-})
+const express = require('express');
+const cors = require('cors');
+const { connectToMongoDB } = require('./database/database');
+const userRoutes = require('./routes/userRoute');
 
 const app = express();
+const port = process.env.PORT || 5000;
 
+// Middleware
+app.use(cors());
 app.use(express.json());
 
-app.listen(3000, () =>{
-    console.log('port running 3000')
-})
+// Connect to MongoDB
+connectToMongoDB();
 
+// Mount user routes
+app.use('/', userRoutes);
 
-app.use('/api/user', UserRoutes )
-app.use('/api/auth', AuthRoute )
+// Default route
+app.get('/', (req, res) => {
+    res.send("Server Running");
+});
 
-app.use((err, req, res, next) =>{
-    const statusCode = err.statusCode || 500
-    const message = err.message || 'internal server error';
-    res.status(statusCode).json({
-        success : false,
-        statusCode,
-        message
-    })
-})
+// Start the server
+app.listen(port, () => {
+    console.log(`Server running on ${port}`);
+});
