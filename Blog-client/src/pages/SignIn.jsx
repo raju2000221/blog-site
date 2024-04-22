@@ -2,11 +2,14 @@ import { Alert, Button, Label, Spinner, TextInput } from 'flowbite-react';
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useDispatch } from 'react-redux';
+import { signSuccess  } from '../redux/user/userSlice';
 
 const SignIn = () => {
     const [formData, setFormData] = useState({});
     const [loading, setLoading] = useState(false);
  const navigate = useNavigate();
+ const dispatch = useDispatch();
     const [errors, setErrors] = useState({
         usernameEmail: '',
         password: '',
@@ -41,13 +44,16 @@ const SignIn = () => {
         try {
             setLoading(true);
             const res = await axios.post('http://localhost:5000/userLogin', formData);
-            console.log(res.status)
-            setLoading(false);
-            setFormData({});
-            setErrors({});
-            document.getElementById('usernameEmail').value = '';
-            document.getElementById('password').value = '';
+      
             if(res.status === 200){
+                console.log(res.status)
+                console.log(res.data)
+                setLoading(false);
+                setFormData({});
+                setErrors({});
+                document.getElementById('usernameEmail').value = '';
+                document.getElementById('password').value = '';
+                dispatch(signSuccess(res.data))
                 navigate('/')
             }
         } catch (error) {
