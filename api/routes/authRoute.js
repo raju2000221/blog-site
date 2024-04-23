@@ -12,7 +12,7 @@ router.post('/userLogin', async (req, res) => {
         const { usernameEmail, password } = req.body;
         if(usernameEmail){
             const existingEmail = await User.findOne({email : usernameEmail});
-            const existingUser = await User.findOne({username : usernameEmail});
+            const existingUser = await User.findOne({name : usernameEmail});
 
             if(existingUser || existingEmail ){
              
@@ -24,7 +24,7 @@ router.post('/userLogin', async (req, res) => {
                 }
                const comparePassword = bcrypt.compareSync(password, user.password);
                if(comparePassword){
-                const { username, email, _id } = user;
+                const {name, email, _id } = user;
                 const token = jwt.sign(
                     {
                         userID:user._id
@@ -33,7 +33,7 @@ router.post('/userLogin', async (req, res) => {
                 )
                 res.status(200).cookie('access_token', token, {               
                     httpOnly:true,
-                }).json({ username, email, _id })
+                }).json({ name, email, _id })
                }else{
                 return res.status(401).json({
                     message: "Invalid Password"

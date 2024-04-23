@@ -9,7 +9,7 @@ const SignUp = () => {
     const [loading, setLoading] = useState(false);
  const navigate = useNavigate();
     const [errors, setErrors] = useState({
-        username: '',
+        name: '',
         email: '',
         password: '',
     });
@@ -23,16 +23,16 @@ const SignUp = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        const { username, email, password } = formData;
+        const { name, email, password } = formData;
         const newErrors = {};
 
         // Basic client-side validation
-        if (!username && !email && !password) {
-            newErrors.username = 'Username is required';
+        if (!name && !email && !password) {
+            newErrors.name = 'name is required';
             newErrors.email = 'Email is required';
             newErrors.password = 'Password is required';
         }
-        if (!username) newErrors.username = 'Username is required';
+        if (!name) newErrors.name = 'name is required';
         if (!email) newErrors.email = 'Email is required';
         if (!password) newErrors.password = 'Password is required';
         if (email && !/\S+@\S+\.\S+/.test(email)) newErrors.email = 'Invalid email format';
@@ -49,7 +49,7 @@ const SignUp = () => {
             setLoading(false);
             setFormData({});
             setErrors({});
-            document.getElementById('username').value = '';
+            document.getElementById('name').value = '';
             document.getElementById('email').value = '';
             document.getElementById('password').value = '';
             if(res.status === 201){
@@ -62,7 +62,7 @@ const SignUp = () => {
                 if (status === 402) {
                     newErrors.email = 'This email is already in use';
                 } else {
-                    setAlert(data.message);
+
                 }
                 setErrors(newErrors);
                 setLoading(false);
@@ -86,12 +86,12 @@ const SignUp = () => {
                         <div className="">
                             <Label value='Your user Name' />
                             <TextInput
-                                placeholder='Username'
+                                placeholder='name'
                                 type='text'
-                                id='username'
+                                id='name'
                                 onChange={handleChange}
                             />
-                            <p className='text-red-500 text-sm'>{errors.username}</p>
+                            <p className='text-red-500 text-sm'>{errors.name}</p>
                         </div>
                         <div className="">
                             <Label value='Your email' />

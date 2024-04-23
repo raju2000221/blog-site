@@ -11,8 +11,8 @@ router.post('/userSignUp', async (req, res) => {
     try {
         const User = client.db('blog').collection('blogUser');
 
-        const { username, email, password } = req.body;
-        if(username && email && password){
+        const { name, email, password } = req.body;
+        if(name && email && password){
             const existingUser = await User.findOne({email : email});
             if(!existingUser){
                 if(password.length >= 6){
@@ -30,7 +30,7 @@ router.post('/userSignUp', async (req, res) => {
 
                     
                     const newUser = {
-                        username,
+                        name,
                         email,
                         password: hashedPassword,
                         createdAt : localDateString

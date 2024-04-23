@@ -1,9 +1,14 @@
 import React from 'react';
+import DashboardSidebar from '../components/DashboardSidebar';
+import DashProfile from '../components/DashProfile';
 
 const Dashboard = () => {
     return (
-        <div>
-            <h1>dashboard</h1>
+        <div className='min-h-screen flex flex-col md:flex-row'>
+            <div className="">
+                <DashboardSidebar/>
+            </div>
+            <DashProfile/>
         </div>
     );
 };
