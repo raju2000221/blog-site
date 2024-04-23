@@ -28,8 +28,7 @@ router.post('/userLogin', async (req, res) => {
                 )
                 res.status(200).cookie('access_token', token, {               
                     httpOnly:true,
-                    success: true
-                }).json({ username, email,_id })
+                }).json({ username, email, _id })
                }else{
                 return res.status(401).json({
                     message: "Invalid Password"
