@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useDispatch } from 'react-redux';
 import { signSuccess  } from '../redux/user/userSlice';
+import OAuth from '../components/OAuth';
 
 const SignIn = () => {
     const [formData, setFormData] = useState({});
@@ -54,7 +55,7 @@ const SignIn = () => {
                 document.getElementById('usernameEmail').value = '';
                 document.getElementById('password').value = '';
                 dispatch(signSuccess(res.data))
-                navigate('/')
+                navigate('/')  
             }
         } catch (error) {
             if (error.response) {
@@ -112,6 +113,7 @@ const SignIn = () => {
                         }
 
                     </Button>
+                    <OAuth/>
                 </form>
                 <div className="flex gap-4 mt-3">
                     <span>don't have an account ?</span>

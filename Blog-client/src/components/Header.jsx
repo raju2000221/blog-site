@@ -1,11 +1,15 @@
-import { Button, Navbar, TextInput } from 'flowbite-react';
+import { Avatar, Button, Dropdown, Navbar, TextInput } from 'flowbite-react';
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { AiOutlineSearch } from 'react-icons/ai'
 import { FaMoon } from 'react-icons/fa'
+import { useSelector } from 'react-redux';
+import image_placeHolder from '../assets/profile_placeholder.png'
 
 const Header = () => {
-    const path = useLocation().pathname
+    const path = useLocation().pathname;
+    const { currentUser } = useSelector(state => state.user)
+    console.log(currentUser)
     return (
         <Navbar className='border-b-2'>
             <Link to="/" className='self-center whitespace-nowrap text-sm sm:text-xl dark:text-white font-semibold'>
@@ -27,20 +31,45 @@ const Header = () => {
                 <Button className='w-12 h-10 hidden lg:inline' color='gray' pill>
                     <FaMoon />
                 </Button>
-                <Link to="/SignIn">
-                    <Button gradientDuoTone="purpleToBlue" outline >
-                        Sign In
-                    </Button>
-                </Link>
+                {currentUser ? (
+                    <Dropdown
+                        arrowIcon={false}
+                        inline
+                        label={
+                            <Avatar
+                                img={currentUser.photoUrl ? currentUser.photoUrl : image_placeHolder}
+                                rounded
+                            />
+                        }
+                    >
+                        <div className=" border-b-2 p-2 ">
+                        <Dropdown.Item className='p-0 cursor-text'>{currentUser.name}</Dropdown.Item>
+                        <Dropdown.Item className='p-0 cursor-text'>{currentUser.email}</Dropdown.Item>
+                        </div>
+                        <Link to="/Dashboard?tab=profile"> <Dropdown.Item>Dashboard</Dropdown.Item></Link>
+                        <Dropdown.Item>Sign out</Dropdown.Item>
+
+                    </Dropdown>
+                ) : (
+                    // Content to render when user is not logged in
+                    <Link to="/SignIn">
+                        <Button gradientDuoTone="purpleToBlue" outline>
+                            Sign In
+                        </Button>
+                    </Link>
+                )
+                }
+
+
                 <Navbar.Toggle />
-            </div>
+            </div >
             <Navbar.Collapse>
                 <Navbar.Link as={'div'} active={path === "/"}><Link to="/">Home</Link></Navbar.Link>
                 <Navbar.Link as={'div'} active={path === "/about"}><Link to="/about">About</Link></Navbar.Link>
                 <Navbar.Link as={'div'} active={path === "/SignUp"}><Link to="/SignUp">SignUp</Link></Navbar.Link>
             </Navbar.Collapse>
 
-        </Navbar>
+        </Navbar >
     );
 };
 
