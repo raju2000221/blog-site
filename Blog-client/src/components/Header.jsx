@@ -13,6 +13,8 @@ const Header = () => {
     const { theme } = useSelector(state => state.theme)
     const dispatch = useDispatch()
     console.log(currentUser)
+
+
     return (
         <Navbar className='border-b-2'>
             <Link to="/" className='self-center whitespace-nowrap text-sm sm:text-xl dark:text-white font-semibold'>
@@ -27,6 +29,7 @@ const Header = () => {
                     className='hidden lg:inline'
                 />
             </form>
+
             <Button className='w-12 h-10 lg:hidden' color='gray' pill>
                 <AiOutlineSearch />
             </Button>
@@ -34,6 +37,7 @@ const Header = () => {
                 <Button className='w-12 h-10 hidden lg:inline' color='gray' pill onClick={() =>dispatch(toggleTheme())}>
                     {theme === 'light' ? <FaMoon/> : <FaSun/>}
                 </Button>
+
                 {currentUser ? (
                     <Dropdown
                         arrowIcon={false}

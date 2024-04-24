@@ -3,15 +3,11 @@ const router = express.Router();
 const bcrypt = require('bcrypt');
 const { client } = require('../database/database');
 
-
-
-
-
 router.post('/userSignUp', async (req, res) => {
     try {
         const User = client.db('blog').collection('blogUser');
 
-        const { name, email, password } = req.body;
+        const { name, email, password, photoUrl } = req.body;
         if(name && email && password){
             const existingUser = await User.findOne({email : email});
             if(!existingUser){
@@ -32,6 +28,7 @@ router.post('/userSignUp', async (req, res) => {
                     const newUser = {
                         name,
                         email,
+                        photoUrl,
                         password: hashedPassword,
                         createdAt : localDateString
                     };

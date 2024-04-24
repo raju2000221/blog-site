@@ -24,16 +24,18 @@ router.post('/userLogin', async (req, res) => {
                 }
                const comparePassword = bcrypt.compareSync(password, user.password);
                if(comparePassword){
-                const {name, email, _id } = user;
+                const {name, email, _id, photoUrl } = user;
                 const token = jwt.sign(
                     {
                         userID:user._id
                     },
                     process.env.JWT_SEC
                 )
-                res.status(200).cookie('access_token', token, {               
-                    httpOnly:true,
-                }).json({ name, email, _id })
+                res.status(200).cookie('access_token', token, {  
+                         
+                    // httpOnly:true,
+                }).json({ name, email, _id, photoUrl  })
+                console.log(token)   
                }else{
                 return res.status(401).json({
                     message: "Invalid Password"
@@ -67,23 +69,25 @@ router.post('/googleLogin', async (req, res) => {
     try {
         const User = client.db('blog').collection('blogUser');
 
-        const { email, name, photoUrl } = req.body;
+        const { email,name,photoUrl } = req.body;
         const existingEmail = await User.findOne({email : email});
-
-        if(existingEmail){
             if(existingEmail){
+                const { email , name, photoUrl, _id} = existingEmail;
                 const newUser= {
-                    email,
+                    email ,
                     name,
                     photoUrl,
+                    _id
                 }
                 const token = jwt.sign({id: existingEmail._id}, process.env.JWT_SEC)
+                console.log(token)
                 res.status(200).cookie('access_token', token, {
-                    httpOnly:true,
+                    // httpOnly:true,
                 }).json(newUser)
             }
-        }
+      
         else{
+            const currentDate = new Date();
             const year = currentDate.getFullYear();
             const month = currentDate.getMonth() + 1;
             const day = currentDate.getDate();
