@@ -10,9 +10,9 @@ const DashboardSidebar = () => {
             <Sidebar.Item icon={HiUser} label="User" labelColor="dark">
               Profile
             </Sidebar.Item>
-            <Sidebar.Item  icon={HiArrowSmRight}>
+            {/* <Sidebar.Item  icon={HiArrowSmRight}>
               Sign Out
-            </Sidebar.Item>
+            </Sidebar.Item> */}
           </Sidebar.ItemGroup>
         </Sidebar.Items>
       </Sidebar>

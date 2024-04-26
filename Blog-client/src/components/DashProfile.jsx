@@ -8,7 +8,10 @@ import { CircularProgressbar } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 import axios from 'axios';
 import { HiOutlineExclamationCircle } from "react-icons/hi";
-import { updateSuccess } from '../redux/user/userSlice';
+import { signOutSuccess, updateSuccess } from '../redux/user/userSlice';
+import { deleteSuccess } from '../redux/user/userSlice';
+import { useNavigate } from 'react-router-dom';
+import Calculator from './Calculator';
 
 
 const DashProfile = () => {
@@ -21,6 +24,7 @@ const DashProfile = () => {
     const [userUpdateValue, setuserUpdateValue] = useState(null);
     const filePicker = useRef()
     const dispatch = useDispatch();
+    const navigate = useNavigate()
     const handleImageChange = (e) => {
         const file = e.target.files[0];
         if (file) {
@@ -98,8 +102,28 @@ const DashProfile = () => {
             console.error('Error updating user:', error);
         }
     };
-
-
+    const handleDeleteAcc = async () => {
+        try {
+            console.log('delete');
+            const res = await axios.post(`http://localhost:5000/userDelete/${currentUser._id}`);
+    
+            if (res.status === 200) {
+                dispatch(deleteSuccess(null));
+                navigate('/SignIn');
+            } else {
+                console.error('Failed to delete user account');
+                // Handle the failure scenario
+            }
+        } catch (error) {
+            console.error('Error deleting user account:', error);
+            // Handle the error scenario
+        }
+    };
+    
+const handleSignOut = ()=>{
+    dispatch(signOutSuccess(null));
+    navigate('/SignIn');
+}
 
     return (
         <div className='mx-auto max-w-lg p-3 w-full'>
@@ -148,8 +172,8 @@ const DashProfile = () => {
                 </Button>
             </form>
             <div className=" text-red-500 flex justify-between mt-5 ">
-                <span className='cursor-pointer'>Delete Account</span>
-                <span className='cursor-pointer'>Sign Out</span>
+                <span className='cursor-pointer' onClick={handleDeleteAcc}>Delete Account</span>
+                <span className='cursor-pointer' onClick={handleSignOut}>Sign Out</span>
             </div>
             <div className="">
                 <Modal show={openModal} size="md" onClose={() => setOpenModal(false)} popup>
@@ -171,6 +195,7 @@ const DashProfile = () => {
                         </div>
                     </Modal.Body>
                 </Modal>
+
             </div>
 
         </div>
