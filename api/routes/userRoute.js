@@ -29,6 +29,7 @@ router.post('/userSignUp', async (req, res) => {
                         name,
                         email,
                         photoUrl,
+                        isAdmin : false,
                         password: hashedPassword,
                         createdAt : localDateString
                     };

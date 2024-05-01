@@ -24,7 +24,7 @@ router.post('/userLogin', async (req, res) => {
                 }
                const comparePassword = bcrypt.compareSync(password, user.password);
                if(comparePassword){
-                const {name, email, _id, photoUrl } = user;
+                const {name, email, _id, photoUrl, isAdmin } = user;
                 const token = jwt.sign(
                     {
                         userID:user._id
@@ -33,8 +33,8 @@ router.post('/userLogin', async (req, res) => {
                 )
                 res.status(200).cookie('access_token', token, {  
                          
-                    // httpOnly:true,
-                }).json({ name, email, _id, photoUrl  })
+                    httpOnly:true,
+                }).json({ name, email, _id, photoUrl ,isAdmin })
                 console.log(token)   
                }else{
                 return res.status(401).json({
@@ -69,24 +69,22 @@ router.post('/googleLogin', async (req, res) => {
     try {
         const User = client.db('blog').collection('blogUser');
 
-        const { email,name,photoUrl } = req.body;
-        const existingEmail = await User.findOne({email : email});
-            if(existingEmail){
-                const { email , name, photoUrl, _id} = existingEmail;
-                const newUser= {
-                    email ,
-                    name,
-                    photoUrl,
-                    _id
-                }
-                const token = jwt.sign({id: existingEmail._id}, process.env.JWT_SEC)
-                console.log(token)
-                res.status(200).cookie('access_token', token, {
-                    // httpOnly:true,
-                }).json(newUser)
-            }
-      
-        else{
+        const { email, name, photoUrl } = req.body;
+        const existingEmail = await User.findOne({ email: email });
+        let token;
+
+        if (existingEmail) {
+            const { email, name, photoUrl, _id, isAdmin } = existingEmail;
+            const newUser = {
+                email,
+                name,
+                isAdmin,
+                photoUrl,
+                _id
+            };
+            token = jwt.sign({ id: existingEmail._id }, process.env.JWT_SEC);
+            res.cookie('access_token', token, { httpOnly: false }).json(newUser);
+        } else {
             const currentDate = new Date();
             const year = currentDate.getFullYear();
             const month = currentDate.getMonth() + 1;
@@ -96,19 +94,18 @@ router.post('/googleLogin', async (req, res) => {
             const seconds = currentDate.getSeconds();
             const localDateString = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 
-            const newUser= {
+            const newUser = {
                 email,
                 name,
+                isAdmin: false,
                 photoUrl,
-                createdAt : localDateString
-            }
+                createdAt: localDateString
+            };
             const result = await User.insertOne(newUser);
-            const token = jwt.sign({id: newUser._id}, process.env.JWT_SEC)
-            res.status(200).cookie('access_token', token, {
-                httpOnly:true,
-            }).json(newUser)
+            token = jwt.sign({ id: newUser._id }, process.env.JWT_SEC);
+            res.cookie('access_token', token, { httpOnly: false }).json(newUser);
         }
-      
+
     } catch (error) {
         console.error('Error signing up user:', error);
         res.status(500).json({
@@ -117,6 +114,12 @@ router.post('/googleLogin', async (req, res) => {
         });
     }
 });
+router.post('/set-cookie', (req, res) => {
+
+        res.cookie('myCookie', 'cookie_value', { maxAge: 3600000 });
+        res.send('Cookie set successfully');
+        console.log('cookie')
+      });
 
 
 

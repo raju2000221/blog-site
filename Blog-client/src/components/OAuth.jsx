@@ -6,8 +6,8 @@ import { app } from '../firebase';
 import axios from 'axios';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { signSuccess } from '../redux/user/userSlice';
-
+import { accessToken, signSuccess } from '../redux/user/userSlice';
+ 
 const OAuth = () => {
     const auth = getAuth(app)
     const navigate = useNavigate()
@@ -25,15 +25,12 @@ const OAuth = () => {
                 photoUrl :  photoURL
             }
             console.log(photoURL)
-            const res = await axios.post('http://localhost:5000/googleLogin', user);
+            const res = await axios.post('http://localhost:5000/googleLogin',user);
             console.log(res.status)
             if(res.status === 200){
-            console.log(res.data)
-
                 dispatch(signSuccess(res.data))
                 navigate('/')  
             }
-            console.log(resultFromGoogle);
         } catch (error) {
             console.error("Error signing in with Google:", error.message);
         }

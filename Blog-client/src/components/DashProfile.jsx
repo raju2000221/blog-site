@@ -10,7 +10,7 @@ import axios from 'axios';
 import { HiOutlineExclamationCircle } from "react-icons/hi";
 import { signOutSuccess, updateSuccess } from '../redux/user/userSlice';
 import { deleteSuccess } from '../redux/user/userSlice';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Calculator from './Calculator';
 
 
@@ -170,7 +170,20 @@ const handleSignOut = ()=>{
                 <Button className='mt-5' type='submit' gradientDuoTone='purpleToBlue'>
                     Update
                 </Button>
+             
             </form>
+            {currentUser.isAdmin && (
+                    <Link to='/create-post'>
+                    <Button
+                    type='button'
+                    gradientDuoTone='purpleToPink'
+                    className='w-full mt-5'
+                    
+                    >
+                        Create a post
+                    </Button>
+                    </Link>
+                )}
             <div className=" text-red-500 flex justify-between mt-5 ">
                 <span className='cursor-pointer' onClick={handleDeleteAcc}>Delete Account</span>
                 <span className='cursor-pointer' onClick={handleSignOut}>Sign Out</span>
