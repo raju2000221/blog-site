@@ -1,37 +1,46 @@
 const express = require('express');
 const router = express.Router();
-const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const { client } = require('../database/database');
-const jwt = require("jsonwebtoken");
 const { ObjectId } = require('mongodb');
 
-router.put('/userUpdate/:userID', async (req, res) => {
+router.put('/userUpdate', async (req, res) => {
+    const token = req.cookies.token;
     const User = client.db('blog').collection('blogUser');
     try {
-        const { userID } = req.params;
-        const { name, photoUrl } = req.body;
-        const userIdObject = new ObjectId(userID);
-        const user = await User.findOne({ _id: userIdObject });
-
-        if (!user) {
-            return res.status(404).json({ error: 'User not found' });
+        if (!token) {
+            return res.status(401).json({ message: 'Token not provided' });
         }
 
-        // Update user fields if new values are provided
-        if (name) {
-            user.name = name;
-        }
-        if (photoUrl) {
-            user.photoUrl = photoUrl;
-        }
+        jwt.verify(token, process.env.JWT_SEC, async (err, decoded) => {
+            if (err) {
+                return res.status(401).json({ message: 'Unauthorized' });
+            } else {
+                const userId = new ObjectId(decoded.id);
+                const user = await User.findOne({ _id: userId });
+                if (!user) {
+                    return res.status(404).json({ error: 'User not found' });
+                }
+                const { userUpdateValue } = req.body;
+                const { name, photoUrl } = userUpdateValue;
 
-        await User.updateOne({ _id: userIdObject }, { $set: user });
-        res.status(200).json({
-             name : user.name, 
-             email :user.email, 
-             _id : user._id, 
-             photoUrl : photoUrl });
-        console.log(user)
+                if (name) {
+                    user.name = name;
+                }
+                if (photoUrl) {
+                    user.photoUrl = photoUrl;
+                }
+
+                await User.updateOne({ _id: userId }, { $set: user });
+
+                res.status(200).json({
+                    name: user.name,
+                    email: user.email,
+                    _id: user._id,
+                    photoUrl: user.photoUrl
+                });
+            }
+        });
 
     } catch (error) {
         console.error('Error updating user:', error);

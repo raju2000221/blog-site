@@ -10,52 +10,49 @@ router.post('/userLogin', async (req, res) => {
         const User = client.db('blog').collection('blogUser');
 
         const { usernameEmail, password } = req.body;
-        if(usernameEmail){
-            const existingEmail = await User.findOne({email : usernameEmail});
-            const existingUser = await User.findOne({name : usernameEmail});
+        if (usernameEmail) {
+            const existingEmail = await User.findOne({ email: usernameEmail });
+            const existingUser = await User.findOne({ name: usernameEmail });
 
-            if(existingUser || existingEmail ){
-             
+            if (existingUser || existingEmail) {
                 const user = existingEmail || existingUser;
-                if(!(user.password)){
+                if (!(user.password)) {
                     return res.status(401).json({
                         message: "Invalid Password"
-                    })
+                    });
                 }
-               const comparePassword = bcrypt.compareSync(password, user.password);
-               if(comparePassword){
-                const {name, email, _id, photoUrl, isAdmin } = user;
-                const token = jwt.sign(
-                    {
-                        userID:user._id
-                    },
-                    process.env.JWT_SEC
-                )
-                res.status(200).cookie('access_token', token, {  
-                         
-                    httpOnly:true,
-                }).json({ name, email, _id, photoUrl ,isAdmin })
-                console.log(token)   
-               }else{
-                return res.status(401).json({
-                    message: "Invalid Password"
-                })
-               }
-             
-            }
-            else
-            {return res.status(403).json({
-                    message: "User or Email Not Found"
-                })
-            }
+                const comparePassword = bcrypt.compareSync(password, user.password);
+                if (comparePassword) {
+                    const { password, ...userWithoutPassword } = user;
 
-        }
-        else{
+                    // Generate JWT token
+                    const token = jwt.sign(
+                        {
+                            userID: user._id
+                        },
+                        process.env.JWT_SEC
+                    );
+
+                    res.cookie('token', token, {
+                        httpOnly: true, 
+                        
+                    });
+                    return res.status(200).json({ userWithoutPassword });
+                } else {
+                    return res.status(401).json({
+                        message: "Invalid Password"
+                    });
+                }
+            } else {
+                return res.status(403).json({
+                    message: "User or Email Not Found"
+                });
+            }
+        } else {
             return res.status(400).json({
-                message: "This field are Required"
-            })
+                message: "This field is required"
+            });
         }
-      
     } catch (error) {
         console.error('Error signing up user:', error);
         res.status(500).json({
@@ -64,6 +61,7 @@ router.post('/userLogin', async (req, res) => {
         });
     }
 });
+
 
 router.post('/googleLogin', async (req, res) => {
     try {
@@ -83,7 +81,11 @@ router.post('/googleLogin', async (req, res) => {
                 _id
             };
             token = jwt.sign({ id: existingEmail._id }, process.env.JWT_SEC);
-            res.cookie('access_token', token, { httpOnly: false }).json(newUser);
+            res.cookie('token', token, {
+                httpOnly: true, 
+                
+            });
+            return res.status(200).json(newUser);
         } else {
             const currentDate = new Date();
             const year = currentDate.getFullYear();
@@ -103,7 +105,11 @@ router.post('/googleLogin', async (req, res) => {
             };
             const result = await User.insertOne(newUser);
             token = jwt.sign({ id: newUser._id }, process.env.JWT_SEC);
-            res.cookie('access_token', token, { httpOnly: false }).json(newUser);
+            res.cookie('token', token, {
+                httpOnly: true, 
+                
+            });
+            return res.status(200).json(newUser);
         }
 
     } catch (error) {
@@ -114,13 +120,9 @@ router.post('/googleLogin', async (req, res) => {
         });
     }
 });
-router.post('/set-cookie', (req, res) => {
-
-        res.cookie('myCookie', 'cookie_value', { maxAge: 3600000 });
-        res.send('Cookie set successfully');
-        console.log('cookie')
-      });
 
 
+    
+    
 
 module.exports = router;

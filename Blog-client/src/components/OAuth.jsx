@@ -25,8 +25,11 @@ const OAuth = () => {
                 photoUrl :  photoURL
             }
             console.log(photoURL)
-            const res = await axios.post('http://localhost:5000/googleLogin',user);
+            const res = await axios.post('http://localhost:5000/googleLogin',user,{
+                withCredentials: true
+            });
             console.log(res.status)
+            console.log(res.data)
             if(res.status === 200){
                 dispatch(signSuccess(res.data))
                 navigate('/')  

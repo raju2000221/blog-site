@@ -22,6 +22,7 @@ const DashProfile = () => {
     const [uplodingError, setuplodingError] = useState(null)
     const [openModal, setOpenModal] = useState(false);
     const [userUpdateValue, setuserUpdateValue] = useState(null);
+    const [error, setError] = useState(null);
     const filePicker = useRef()
     const dispatch = useDispatch();
     const navigate = useNavigate()
@@ -87,25 +88,36 @@ const DashProfile = () => {
     }
 
     const handleUpdate = async () => {
+        setError(null)
         try {
-            const res = await axios.put(`http://localhost:5000/userUpdate/${currentUser._id}`, userUpdateValue);
-            if(res.status === 200){
-                const updateUser = await res.data
-                dispatch(updateSuccess(updateUser))
-                setuserUpdateValue(null)
-                setuplodingProgress(null)
-                setprofileImage(null)
-                setprofileImageUrl(null)
-                setOpenModal(false)
-            }
+            const res = await axios.put('http://localhost:5000/userUpdate', { userUpdateValue }, {
+                withCredentials: true
+            });
+        
+            console.log(res);
+        
+            if (res.status === 200) {
+                const updateUser = res.data;
+                dispatch(updateSuccess(updateUser));
+                setuserUpdateValue(null);
+                setuplodingProgress(null);
+                setprofileImage(null);
+                setprofileImageUrl(null);
+                setOpenModal(false);
+            } 
         } catch (error) {
-            console.error('Error updating user:', error);
+            setError('Unauthorized');
+            console.error('Error updating user:', error.response.statusText);
         }
+        
+        
     };
     const handleDeleteAcc = async () => {
         try {
             console.log('delete');
-            const res = await axios.post(`http://localhost:5000/userDelete/${currentUser._id}`);
+            const res = await axios.get('http://localhost:5000/userDelete',{
+                withCredentials: true
+            });
     
             if (res.status === 200) {
                 dispatch(deleteSuccess(null));
@@ -162,8 +174,6 @@ const handleSignOut = ()=>{
                     uplodingError && <p className='text-red-400 text-center'>Uploading error : {uplodingError}</p>
                 }
                 <div className=" flex flex-col gap-5 mt-12">
-                    {console.log(currentUser.name)}
-                    {console.log(currentUser)}
                     <TextInput type='text' id='username' placeholder='Username' defaultValue={currentUser.name} />
                     <TextInput readOnly type='text' id='email' placeholder='Email' defaultValue={currentUser.email} />
                 </div>
@@ -188,6 +198,7 @@ const handleSignOut = ()=>{
                 <span className='cursor-pointer' onClick={handleDeleteAcc}>Delete Account</span>
                 <span className='cursor-pointer' onClick={handleSignOut}>Sign Out</span>
             </div>
+            {error ? <p className='text-red-500 text-center bg-red-100 p-3 rounded-sm'>{error}</p> : null}
             <div className="">
                 <Modal show={openModal} size="md" onClose={() => setOpenModal(false)} popup>
                     <Modal.Header />

@@ -44,20 +44,22 @@ const SignIn = () => {
 
         try {
             setLoading(true);
-            const res = await axios.post('http://localhost:5000/userLogin', formData);
-      
+            const res = await axios.post('http://localhost:5000/userLogin', formData, {
+                withCredentials: true
+            });  
             if(res.status === 200){
-                console.log(res.status)
-                console.log(res.data)
+                console.log(res.status);
+                console.log(res.data.userWithoutPassword);
                 setLoading(false);
                 setFormData({});
                 setErrors({});
                 document.getElementById('usernameEmail').value = '';
                 document.getElementById('password').value = '';
-                dispatch(signSuccess(res.data))
-                navigate('/')  
+                dispatch(signSuccess(res.data.userWithoutPassword));
+                navigate('/');
             }
-        } catch (error) {
+        }
+         catch (error) {
             if (error.response) {
                 const { data, status } = error.response;
                 if (status === 403) {
