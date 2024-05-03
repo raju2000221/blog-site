@@ -9,12 +9,12 @@ router.get('/userDelete', async (req, res) => {
     const User = client.db('blog').collection('blogUser');
     try {
         if (!token) {
-             res.status(401).json({ message: 'Token not provided' });
+            return res.status(401).json({ message: 'Token not provided' });
         }
 
         jwt.verify(token, process.env.JWT_SEC, async (err, decoded) => {
             if (err) {
-                 res.status(401).json({ message: 'Unauthorized' });
+                return res.status(401).json({ message: 'Unauthorized' });
             } else {
                 const userId = new ObjectId(decoded.id); // Convert userId to ObjectId
                 console.log('objectid', userId)
@@ -23,7 +23,7 @@ router.get('/userDelete', async (req, res) => {
             }
         });
 
-        res.status(200).json({ message: 'User deleted successfully' });
+       return res.status(200).json({ message: 'User deleted successfully' });
 
     } catch (error) {
         console.error('Error deleting user:', error);

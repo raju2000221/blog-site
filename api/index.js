@@ -5,6 +5,7 @@ const userRoutes = require('./routes/userRoute');
 const authRoute = require('./routes/authRoute');
 const updateUserRoute = require('./routes/updateUserRoute');
 const deleteUserRoute = require('./routes/deleteAccRoute');
+const createPost = require('./routes/Post.route');
 const cookieParser = require('cookie-parser');
 
 const app = express();
@@ -30,6 +31,7 @@ app.use('/', userRoutes);
 app.use('/', authRoute);
 app.use('/', updateUserRoute); 
 app.use('/',  deleteUserRoute); 
+app.use('/',  createPost); 
 
 
 

@@ -19,7 +19,7 @@ router.put('/userUpdate', async (req, res) => {
                 const userId = new ObjectId(decoded.id);
                 const user = await User.findOne({ _id: userId });
                 if (!user) {
-                    return res.status(404).json({ error: 'User not found' });
+                    return res.status(404).json({ message: 'User not found' });
                 }
                 const { userUpdateValue } = req.body;
                 const { name, photoUrl } = userUpdateValue;

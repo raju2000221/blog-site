@@ -1,15 +1,41 @@
 const express = require('express');
 const router = express.Router();
-const bcrypt = require('bcrypt');
 const { client } = require('../database/database');
-const jwt = require("jsonwebtoken")
+const jwt = require("jsonwebtoken");
+const { ObjectId } = require('mongodb');
 
 
-router.post('/post', async (req, res) => {
-if(!req.body.isAdmin){
-    return res.status(400).json({
-        message: "You are not allowd to create post"
+router.post('/createpost', async (req, res) => {
+    const token = req.cookies.token;
+    const User = client.db('blog').collection('blogUser');
+
+try{
+    if(!token){
+        return res.status(401).json({
+            message: "Unthorize"
+        })
+    }
+    jwt.verify(token, process.env.JWT_SEC, async (err, decoded) =>{
+        if(err){
+            return res.status(401).json({
+                message: "Unthorize"
+            })
+        }else{
+            const userId = new ObjectId(decoded.id)
+            const user = await User.findOne({ _id: userId });
+            if(user && user.isAdmin){
+                
+            }else{
+               
+            }
+
+    
+        }
+    
+    
     })
+}catch(error){
+
 }
 });
 

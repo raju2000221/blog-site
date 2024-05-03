@@ -1,9 +1,55 @@
-import { Button, FileInput, Select, TextInput } from 'flowbite-react';
-import React from 'react';
+import { Alert, Button, FileInput, Progress, Select, TextInput } from 'flowbite-react';
+import React, { useState } from 'react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
+import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/storage'
+import { app } from '../firebase'
 
 const CreatePost = () => {
+
+    const [image, setImage] = useState(null);
+    const [imageUploadProgress, setimageUploadProgress] = useState(null)
+    const [imageUploadError, setimageUploadError] = useState(null)
+    const [fromData, setfromData] = useState({})
+
+    const handleUploadImage = async () => {
+        console.log(imageUploadProgress)
+        try {
+
+            if (!image) {
+                setimageUploadError('Please select an image');
+                return;
+            }
+            setimageUploadError(null);
+            const storage = getStorage(app)
+            const imageName = new Date().getTime() + '-' + image.name;
+            const storageRef = ref(storage, imageName);
+            const uploadImage = uploadBytesResumable(storageRef, image)
+            uploadImage.on(
+                'state_changed',
+                (snapshot) => {
+                    const progress = (
+                        (snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+                    setimageUploadProgress(progress.toFixed(0))
+                },
+                (error) => {
+                    setimageUploadError('Image upload failed')
+                },
+                () => {
+                    getDownloadURL(uploadImage.snapshot.ref).then((downloadURL) => {
+                        setimageUploadError(null)
+                        setfromData({ ...fromData, image: downloadURL })
+                    })
+                }
+
+            )
+        } catch (error) {
+            setimageUploadError('imageUploadFailed')
+            setimageUploadProgress(null)
+            console.log(error)
+        }
+    }
+
     return (
         <div className='p-3 max-w-3xl mx-auto min-h-screen'>
 
@@ -11,11 +57,11 @@ const CreatePost = () => {
             <form className='flex flex-col gap-4'>
                 <div className='flex flex-col gap-4 sm:flex-row justify-between'>
                     <TextInput
-                    type='text'
-                    placeholder='Title'
-                    required
-                    id='title'
-                    className='flex-1'
+                        type='text'
+                        placeholder='Title'
+                        required
+                        id='title'
+                        className='flex-1'
                     />
                     <Select>
                         <option value='uncatagorized'> Select a category</option>
@@ -28,10 +74,31 @@ const CreatePost = () => {
                     </Select>
                 </div>
                 <div className="flex gap-4 items-center justify-center border-2 border-teal-500 border-dotted p-3">
-                    <FileInput type='file' accept='image/*'/>
-                    <Button type='button' gradientDuoTone='purpleToBlue' size='sm' outline> Upload Image</Button>
+                    <FileInput type='file' accept='image/*' onChange={(e) => setImage(e.target.files[0])} />
+                    <Button type='button' gradientDuoTone='purpleToBlue' size='sm' outline onClick={handleUploadImage}> {imageUploadProgress > 99 ? 'Uploaded' : (imageUploadProgress && imageUploadProgress < 100 ? 'Uploading...' : 'Upload Image')}
+
+                    </Button>
                 </div>
-                <ReactQuill theme='snow' placeholder='Write Here...' required className='h-72 mb-12'/>
+                {
+                    imageUploadProgress && imageUploadProgress < 100 ?   <Progress
+                    progress={imageUploadProgress}
+                    progressLabelPosition="inside"
+                    textLabel="Image Uploding..."
+                    textLabelPosition="outside"
+                    size="lg"
+                    color="blue"
+                    labelProgress
+                    labelText
+                /> : (imageUploadProgress > 99 ? <img
+                src={fromData.image}
+                className='w-full h-72 object-cover'
+                
+                /> : (imageUploadError ?     <Alert color="failure" onDismiss={() => alert('Alert dismissed!')}>
+                <span className="font-medium"></span> {imageUploadError}
+              </Alert> : null))
+                }
+              
+                <ReactQuill theme='snow' placeholder='Write Here...' required className='h-72 mb-12' />
                 <Button type='submit' gradientDuoTone='purpleToPink' size='sm' outline>Publish</Button>
 
             </form>
