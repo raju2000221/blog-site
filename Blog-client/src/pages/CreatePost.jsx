@@ -4,6 +4,7 @@ import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/storage'
 import { app } from '../firebase'
+import axios from 'axios';
 
 const CreatePost = () => {
 
@@ -49,12 +50,25 @@ const CreatePost = () => {
             console.log(error)
         }
     }
+    console.log(fromData)
+
+    const handlePublish = async (e) => {
+        e.preventDefault();
+        try {
+            const res = axios.post('http://localhost:5000/createpost', { fromData }, {
+                withCredentials: true
+            })
+        } catch (error) {
+            console.log(error)
+        }
+        console.log(fromData)
+    }
 
     return (
         <div className='p-3 max-w-3xl mx-auto min-h-screen'>
 
             <h1 className='text-center text-3xl my-7 font-semibold'>Create a Post</h1>
-            <form className='flex flex-col gap-4'>
+            <form className='flex flex-col gap-4' onSubmit={handlePublish}>
                 <div className='flex flex-col gap-4 sm:flex-row justify-between'>
                     <TextInput
                         type='text'
@@ -62,8 +76,11 @@ const CreatePost = () => {
                         required
                         id='title'
                         className='flex-1'
+                        onChange={(e) => setfromData({ ...fromData, title: e.target.value })}
                     />
-                    <Select>
+                    <Select
+                        onChange={(e) => setfromData({ ...fromData, category: e.target.value })}
+                    >
                         <option value='uncatagorized'> Select a category</option>
                         <option value='javascript'>Javascript</option>
                         <option value='React'>React.js</option>
@@ -80,26 +97,30 @@ const CreatePost = () => {
                     </Button>
                 </div>
                 {
-                    imageUploadProgress && imageUploadProgress < 100 ?   <Progress
-                    progress={imageUploadProgress}
-                    progressLabelPosition="inside"
-                    textLabel="Image Uploding..."
-                    textLabelPosition="outside"
-                    size="lg"
-                    color="blue"
-                    labelProgress
-                    labelText
-                /> : (imageUploadProgress > 99 ? <img
-                src={fromData.image}
-                className='w-full h-72 object-cover'
-                
-                /> : (imageUploadError ?     <Alert color="failure" onDismiss={() => alert('Alert dismissed!')}>
-                <span className="font-medium"></span> {imageUploadError}
-              </Alert> : null))
+                    imageUploadProgress && imageUploadProgress < 100 ? <Progress
+                        progress={imageUploadProgress}
+                        progressLabelPosition="inside"
+                        textLabel="Image Uploding..."
+                        textLabelPosition="outside"
+                        size="lg"
+                        color="blue"
+                        labelProgress
+                        labelText
+                    /> : (imageUploadProgress > 99 ? <img
+                        src={fromData.image}
+                        className='w-full h-72 object-cover'
+
+                    /> : (imageUploadError ? <Alert color="failure" onDismiss={() => alert('Alert dismissed!')}>
+                        <span className="font-medium"></span> {imageUploadError}
+                    </Alert> : null))
                 }
-              
-                <ReactQuill theme='snow' placeholder='Write Here...' required className='h-72 mb-12' />
-                <Button type='submit' gradientDuoTone='purpleToPink' size='sm' outline>Publish</Button>
+
+                <ReactQuill theme='snow' placeholder='Write Here...' required className='h-72 mb-12'
+                    onChange={(value) => {
+                        setfromData({ ...fromData, content: value })
+                    }}
+                />
+                <Button type='submit' gradientDuoTone='purpleToPink' size='sm' outline >Publish</Button>
 
             </form>
         </div>
