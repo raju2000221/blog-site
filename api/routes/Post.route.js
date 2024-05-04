@@ -27,9 +27,19 @@ try{
             const userId = new ObjectId(decoded.id)
             const user = await User.findOne({ _id: userId });
             if(user && user.isAdmin){
-            
+                const currentDate = new Date();
+
+                // Get the local date components
+                const year = currentDate.getFullYear();
+                const month = currentDate.getMonth() + 1; // Months are zero-based (0 = January)
+                const day = currentDate.getDate();
+                const hours = currentDate.getHours();
+                const minutes = currentDate.getMinutes();
+                const seconds = currentDate.getSeconds();
+                const localDateString = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
                 const result = await post.insertOne({
                     ...postData,
+                    updateAt : localDateString,
                     userId: decoded.id
                 });
                 res.status(201).json({
