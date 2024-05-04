@@ -7,6 +7,7 @@ const updateUserRoute = require('./routes/updateUserRoute');
 const deleteUserRoute = require('./routes/deleteAccRoute');
 const createPost = require('./routes/Post.route');
 const gtepost = require('./routes/postRoute');
+const postdelete = require('./routes/post.delete.route');
 const cookieParser = require('cookie-parser');
 
 const app = express();
@@ -34,6 +35,7 @@ app.use('/', updateUserRoute);
 app.use('/',  deleteUserRoute); 
 app.use('/',  createPost); 
 app.use('/',  gtepost); 
+app.use('/',  postdelete); 
 
 
 
