@@ -7,11 +7,11 @@ const { ObjectId } = require('mongodb');
 
 router.post('/createpost', async (req, res) => {
     const token = req.cookies.token;
-    const {fromData} = req.body;
+    const {postData} = req.body;
     const User = client.db('blog').collection('blogUser');
     const post = client.db('blog').collection('post');
     console.log('token',token)
-    console.log('post data',fromData)
+    console.log('post data',postData)
 try{
     if(!token){
         return res.status(401).json({
@@ -27,19 +27,13 @@ try{
             const userId = new ObjectId(decoded.id)
             const user = await User.findOne({ _id: userId });
             if(user && user.isAdmin){
-                const slug = fromData.title
-                .split(' ')
-                .join('-')
-                .toLowerCase()
-                .replace(/[^a-zA-Z0-9]/g, '-');
-
+            
                 const result = await post.insertOne({
-                    ...fromData,
-                    slug,
+                    ...postData,
                     userId: decoded.id
                 });
                 res.status(201).json({
-                    message: 'User signed up successfully',
+                    message: '',
                 });
             }else{
                

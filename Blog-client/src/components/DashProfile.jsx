@@ -11,7 +11,6 @@ import { HiOutlineExclamationCircle } from "react-icons/hi";
 import { signOutSuccess, updateSuccess } from '../redux/user/userSlice';
 import { deleteSuccess } from '../redux/user/userSlice';
 import { Link, useNavigate } from 'react-router-dom';
-import Calculator from './Calculator';
 
 
 const DashProfile = () => {

@@ -5,9 +5,9 @@ import 'react-quill/dist/quill.snow.css';
 import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/storage'
 import { app } from '../firebase'
 import axios from 'axios';
-
+import {useNavigate} from 'react-router-dom'
 const CreatePost = () => {
-
+    const navigate = useNavigate()
     const [image, setImage] = useState(null);
     const [imageUploadProgress, setimageUploadProgress] = useState(null)
     const [imageUploadError, setimageUploadError] = useState(null)
@@ -50,14 +50,24 @@ const CreatePost = () => {
             console.log(error)
         }
     }
-    console.log(fromData)
+    
 
     const handlePublish = async (e) => {
+        const slug = fromData.title.split(' ')
+    .join('-')
+    .toLowerCase()
+    .replace(/[^a-zA-Z0-9]/g, '-');
         e.preventDefault();
+        const postData = {...fromData , slug}
         try {
-            const res = axios.post('http://localhost:5000/createpost', { fromData }, {
+            const res = await axios.post('http://localhost:5000/createpost', { postData }, {
                 withCredentials: true
             })
+            console.log('redirect',res.status)
+
+            if(res.status === 201){
+                navigate(`/${fromData.category}/${slug}`)
+            }
         } catch (error) {
             console.log(error)
         }
