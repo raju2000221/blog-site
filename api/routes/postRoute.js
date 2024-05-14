@@ -8,7 +8,7 @@ router.get('/getpost', async (req, res) => {
 
     try {
         const startIndex = parseInt(req.query.startIndex) || 0;
-        const limit = parseInt(req.query.limit) || 1;
+        const limit = parseInt(req.query.limit);
         const sortDirection = req.query.order === 'asc' ? 1 : -1;
         const query = {
             ...(req.query.userId && { userId: req.query.userId }),

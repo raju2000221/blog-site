@@ -9,6 +9,8 @@ const createPost = require('./routes/Post.route');
 const gtepost = require('./routes/postRoute');
 const postdelete = require('./routes/post.delete.route');
 const getpostUpdate = require('./routes/getupdatepost');
+const updatepost = require('./routes/updatepost');
+
 const cookieParser = require('cookie-parser');
 
 const app = express();
@@ -38,6 +40,7 @@ app.use('/',  createPost);
 app.use('/',  gtepost); 
 app.use('/',  postdelete); 
 app.use('/',  getpostUpdate); 
+app.use('/',  updatepost); 
 
 
 

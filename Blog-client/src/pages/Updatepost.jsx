@@ -12,12 +12,9 @@ const Updatepost = () => {
     const [image, setImage] = useState(null);
     const [imageUploadProgress, setimageUploadProgress] = useState(null)
     const [imageUploadError, setimageUploadError] = useState(null)
-    const [post, setpost] = useState(null)
     const [fromData, setfromData] = useState({})
     const { postId } = useParams()
     const { currentUser } = useSelector((state) => state.user)
-    console.log(postId)
-    console.log(currentUser._id)
     useEffect(() => {
         const fetchPost = async () => {
             try {
@@ -26,8 +23,8 @@ const Updatepost = () => {
                 });
 
                 if (res.status === 200) {
-                    setfromData(res.data.post);
-                    console.log(post)
+                     const  post = await res.data.post
+                    setfromData(post);
                 }
             } catch (error) {
                 console.log(error.message);
@@ -36,6 +33,9 @@ const Updatepost = () => {
 
         fetchPost();
     }, [postId]);
+    useEffect(() => {
+console.log(fromData)
+    }, [fromData]);
 
     const handleUploadImage = async () => {
         console.log(imageUploadProgress)
@@ -76,7 +76,7 @@ const Updatepost = () => {
     }
 
 
-    const handlePublish = async (e) => {
+    const handleUpdate = async (e) => {
         const slug = fromData.title.split(' ')
             .join('-')
             .toLowerCase()
@@ -84,7 +84,7 @@ const Updatepost = () => {
         e.preventDefault();
         const postData = { ...fromData, slug }
         try {
-            const res = await axios.post('http://localhost:5000/createpost', { postData }, {
+            const res = await axios.put('http://localhost:5000/updatepost', { postData }, {
                 withCredentials: true
             })
             console.log('redirect', res.status)
@@ -95,17 +95,17 @@ const Updatepost = () => {
         } catch (error) {
             console.log(error)
         }
-        console.log(fromData)
+        
     }
-
+console.log(fromData)
     return (
         <div className='p-3 max-w-3xl mx-auto min-h-screen'>
 
             <h1 className='text-center text-3xl my-7 font-semibold'>Create a Post</h1>
-            <form className='flex flex-col gap-4' onSubmit={handlePublish}>
+            <form className='flex flex-col gap-4' onSubmit={handleUpdate}>
                 <div className='flex flex-col gap-4 sm:flex-row justify-between'>
                     <TextInput
-                        value={fromData? fromData.title : 'loading...'}
+                        value={ fromData.title}
                         type='text'
                         placeholder='Title'
                         required
@@ -115,7 +115,7 @@ const Updatepost = () => {
                     />
                     <Select
                         onChange={(e) => setfromData({ ...fromData, category: e.target.value })}
-                        value={fromData? fromData.category :null}
+                        value={fromData.category}
                     >
                         <option value='uncatagorized'> Select a category</option>
                         <option value='javascript'>Javascript</option>
@@ -132,7 +132,6 @@ const Updatepost = () => {
 
                     </Button>
                 </div>
-                {console.log(fromData)}
                 {
                     imageUploadProgress && imageUploadProgress < 100 ? <Progress
                         progress={imageUploadProgress}
@@ -150,21 +149,25 @@ const Updatepost = () => {
                     /> : (imageUploadError ? <Alert color="failure" onDismiss={() => alert('Alert dismissed!')}>
                         <span className="font-medium"></span> {imageUploadError}
                     </Alert> : <img   
-                        src={fromData ? fromData.image : null}
+                        src={ fromData.image}
                         className='w-full h-72 object-cover'
 
                     />))
                 }
 
                 <ReactQuill theme='snow' placeholder='Write Here...' required className='h-72 mb-12'
-                    onChange={(value) => {
-                        setfromData({ ...fromData, content: value })
-                    }}
-                    value={fromData.content}
+                value={fromData.content}
+                onChange={(value) => {
+                    setfromData(prevState => ({
+                        ...prevState,
+                        content: value
+                    }));
+                }}
                 />
-                <Button type='submit' gradientDuoTone='purpleToPink' size='sm' outline >Publish</Button>
+                <Button type='submit' gradientDuoTone='purpleToPink' size='sm' outline >Update</Button>
 
             </form>
+            
         </div>
     );
 };
