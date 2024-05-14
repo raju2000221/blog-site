@@ -12,6 +12,7 @@ router.get('/getpost', async (req, res) => {
         const sortDirection = req.query.order === 'asc' ? 1 : -1;
         const query = {
             ...(req.query.userId && { userId: req.query.userId }),
+            ...(req.query.postId && { postId: req.query.postId }),
             ...(req.query.category && { category: req.query.category }),
             ...(req.query.slug && { slug: req.query.slug }),
             ...(req.query.searchTerm && {

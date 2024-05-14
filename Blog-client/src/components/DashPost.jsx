@@ -11,8 +11,7 @@ const DashPost = () => {
     const [showmore, setShowmore] = useState(true)
     const [openModal, setOpenModal] = useState(false);
     const [deletePostId, setdeletePostId] = useState('');
-
-    console.log(userPost)
+    
     useEffect(() => {
         const fetchPost = async () => {
             const res = await axios.get(`http://localhost:5000/getpost?userId=${currentUser._id}`)
@@ -45,6 +44,7 @@ const DashPost = () => {
         }
     }
     const handledelete = async () => {
+        console.log('delete')
         try {
             setOpenModal(false);
             const res = await axios.delete(`http://localhost:5000/deletepost/${deletePostId}/${currentUser._id}`);

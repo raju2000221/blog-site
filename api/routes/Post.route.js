@@ -10,8 +10,6 @@ router.post('/createpost', async (req, res) => {
     const {postData} = req.body;
     const User = client.db('blog').collection('blogUser');
     const post = client.db('blog').collection('post');
-    console.log('token',token)
-    console.log('post data',postData)
 try{
     if(!token){
         return res.status(401).json({

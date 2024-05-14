@@ -5,11 +5,9 @@ const { ObjectId } = require('mongodb');
 
 router.delete('/deletepost/:postId/:userId', async (req, res) => {
     const userId = req.params.userId;
-    console.log(userId)
     try {
         const postId = new ObjectId(req.params.postId);
-        const verifyadmin = await client.db('blog').collection('post').findOne({ userId: userId, _id:postId});
-
+        const verifyadmin = await client.db('blog').collection('post').findOne({ userId: userId, _id: postId });
         if(verifyadmin ){
             const result = await client.db('blog').collection('post').deleteOne({ _id: postId });
             if (result.deletedCount === 1) {
