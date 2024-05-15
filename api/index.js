@@ -10,6 +10,7 @@ const gtepost = require('./routes/postRoute');
 const postdelete = require('./routes/post.delete.route');
 const getpostUpdate = require('./routes/getupdatepost');
 const updatepost = require('./routes/updatepost');
+const alluser = require('./routes/alluser');
 
 const cookieParser = require('cookie-parser');
 
@@ -41,6 +42,7 @@ app.use('/',  gtepost);
 app.use('/',  postdelete); 
 app.use('/',  getpostUpdate); 
 app.use('/',  updatepost); 
+app.use('/',  alluser); 
 
 
 

@@ -5,7 +5,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux'
 
 const DashboardSidebar = () => {
-  const {currentUser} = useSelector((state) => state.user)
+  const { currentUser } = useSelector((state) => state.user)
 
 
   const location = useLocation();
@@ -28,18 +28,26 @@ const DashboardSidebar = () => {
             </Sidebar.Item>
           </Link>
           {
-            currentUser.isAdmin && 
+            currentUser.isAdmin &&
             < Link to='/dashboard?tab=post'>
-          <Sidebar.Item icon={HiDocument} active={tab === 'post'} as='div'>
-            Post
-          </Sidebar.Item>
-        </Link>
+              <Sidebar.Item icon={HiDocument} active={tab === 'post'} as='div'>
+                Post
+              </Sidebar.Item>
+            </Link>
           }
-        {/* <Sidebar.Item  icon={HiArrowSmRight}>
+          {
+            currentUser.isAdmin &&
+            < Link to='/dashboard?tab=user'>
+              <Sidebar.Item icon={HiUser} active={tab === 'user'} as='div'>
+                User
+              </Sidebar.Item>
+            </Link>
+          }
+          {/* <Sidebar.Item  icon={HiArrowSmRight}>
               Sign Out
             </Sidebar.Item> */}
-      </Sidebar.ItemGroup>
-    </Sidebar.Items>
+        </Sidebar.ItemGroup>
+      </Sidebar.Items>
     </Sidebar >
   );
 };
